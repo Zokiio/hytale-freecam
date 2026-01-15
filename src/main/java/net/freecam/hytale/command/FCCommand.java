@@ -5,7 +5,6 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import net.freecam.hytale.FreecamState;
 import net.freecam.hytale.FreecamState.FreecamData;
@@ -56,7 +55,6 @@ public class FCCommand extends CommandBase {
     }
 
     private void enableFreecam(Player player, FreecamData data) {
-        PlayerRef playerRef = player.getPlayerRef();
         UUID playerId = player.getUuid();
         FreecamState state = FreecamState.getInstance();
 
@@ -64,17 +62,16 @@ public class FCCommand extends CommandBase {
 
         com.hypixel.hytale.protocol.packets.camera.SetFlyCameraMode flyMode = 
             new com.hypixel.hytale.protocol.packets.camera.SetFlyCameraMode(true);
-        playerRef.getPacketHandler().write(flyMode);
+        player.getPlayerConnection().write(flyMode);
     }
 
     private void disableFreecam(Player player, FreecamData data) {
-        PlayerRef playerRef = player.getPlayerRef();
         UUID playerId = player.getUuid();
         FreecamState state = FreecamState.getInstance();
 
         com.hypixel.hytale.protocol.packets.camera.SetFlyCameraMode flyMode = 
             new com.hypixel.hytale.protocol.packets.camera.SetFlyCameraMode(false);
-        playerRef.getPacketHandler().write(flyMode);
+        player.getPlayerConnection().write(flyMode);
 
         state.disableFreecam(playerId);
     }

@@ -6,7 +6,6 @@ import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
 import com.hypixel.hytale.server.core.entity.entities.Player;
-import com.hypixel.hytale.server.core.universe.PlayerRef;
 
 import net.freecam.hytale.FreecamState;
 import net.freecam.hytale.FreecamState.FreecamData;
@@ -61,7 +60,6 @@ public class FreecamCommand extends CommandBase {
      * Uses the built-in fly camera mode which handles all the complex camera settings.
      */
     private void enableFreecam(Player player, FreecamData data) {
-        PlayerRef playerRef = player.getPlayerRef();
         UUID playerId = player.getUuid();
         FreecamState state = FreecamState.getInstance();
 
@@ -71,20 +69,19 @@ public class FreecamCommand extends CommandBase {
         // Use the built-in fly camera mode - this is the safest approach
         // The fly camera mode is designed for free camera movement
         SetFlyCameraMode flyMode = new SetFlyCameraMode(true);
-        playerRef.getPacketHandler().write(flyMode);
+        player.getPlayerConnection().write(flyMode);
     }
 
     /**
      * Disable freecam mode and return camera to player.
      */
     private void disableFreecam(Player player, FreecamData data) {
-        PlayerRef playerRef = player.getPlayerRef();
         UUID playerId = player.getUuid();
         FreecamState state = FreecamState.getInstance();
 
         // Disable fly camera mode - this returns to normal camera
         SetFlyCameraMode flyMode = new SetFlyCameraMode(false);
-        playerRef.getPacketHandler().write(flyMode);
+        player.getPlayerConnection().write(flyMode);
 
         // Mark as disabled
         state.disableFreecam(playerId);
