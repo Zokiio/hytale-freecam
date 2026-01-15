@@ -1,0 +1,92 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.3'
+}
+
+ext {
+    // Use environment variable or default path
+    // Set HYTALE_SERVER_JAR environment variable to point to your HytaleServer.jar
+    hytaleServerJar = System.getenv('HYTALE_SERVER_JAR') ?: "${System.getProperty('user.home')}/hytale/server/HytaleServer.jar"
+    hytaleAssetsZip = System.getenv('HYTALE_ASSETS_ZIP') ?: "${System.getProperty('user.home')}/hytale/server/Assets.zip"
+    hytaleModsDir = System.getenv('HYTALE_MODS_DIR') ?: "${System.getProperty('user.home')}/hytale/server/mods"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_version)
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// Quiet warnings about missing Javadocs.
+javadoc {
+    options.addStringOption('Xdoclint:-missing', '-quiet')
+}
+
+// Adds the Hytale server as a build dependency, allowing you to reference and
+// compile against their code. This requires you to have the Hytale server JAR.
+dependencies {
+    implementation(files(hytaleServerJar))
+}
+
+// Create the working directory to run the server if it does not already exist.
+def serverRunDir = file("$projectDir/run")
+if (!serverRunDir.exists()) {
+    serverRunDir.mkdirs()
+}
+
+// Point to the Hytale server mods directory (if available)
+def serverModsDir = file(hytaleModsDir)
+
+// Updates the manifest.json file with the latest properties defined in the
+// build.properties file. Currently we update the version and if packs are
+// included with the plugin.
+tasks.register('updatePluginManifest') {
+    def manifestFile = file('src/main/resources/manifest.json')
+    doLast {
+        if (!manifestFile.exists()) {
+            throw new GradleException("Could not find manifest.json at ${manifestFile.path}!")
+        }
+        def manifestJson = new groovy.json.JsonSlurper().parseText(manifestFile.text)
+        manifestJson.Version = version
+        manifestJson.IncludesAssetPack = includes_pack.toBoolean()
+        manifestFile.text = groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(manifestJson))
+    }
+}
+
+// Makes sure the plugin manifest is up to date.
+tasks.named('processResources') {
+    dependsOn 'updatePluginManifest'
+}
+
+// Copy the built JAR to the server's mods folder after building (optional)
+tasks.register('copyToMods', Copy) {
+    from jar
+    into serverModsDir
+    onlyIf { serverModsDir.exists() || serverModsDir.mkdirs() }
+    doLast {
+        if (serverModsDir.exists()) {
+            println "Copied ${jar.archiveFileName.get()} to ${serverModsDir}"
+        } else {
+            println "Skipping copy to mods - directory not available: ${serverModsDir}"
+        }
+    }
+}
+
+// Make build copy to mods if available
+tasks.named('build') {
+    finalizedBy 'copyToMods'
+}
+
+// Creates a run configuration in IDEA that will run the Hytale server with
+// your plugin and the default assets.
+idea.project.settings.runConfigurations {
+    'HytaleServer'(org.jetbrains.gradle.ext.Application) {
+        mainClass = 'com.hypixel.hytale.Main'
+        moduleName = project.idea.module.name + '.main'
+        programParameters = "--allow-op --assets=${hytaleAssetsZip}"
+        if (includes_pack.toBoolean()) {
+            programParameters += " --mods=${sourceSets.main.java.srcDirs.first().parentFile.absolutePath}"
+        }
+        workingDirectory = serverRunDir.absolutePath
+    }
+}
