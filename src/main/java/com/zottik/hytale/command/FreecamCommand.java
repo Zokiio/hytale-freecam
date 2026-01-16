@@ -58,21 +58,19 @@ public class FreecamCommand extends AbstractPlayerCommand {
         // Get speed argument if provided
         Integer speed = context.provided(speedArg) ? context.get(speedArg) : null;
         
-        // Get show-player argument if provided (or toggle if no value provided)
+        // Get show-player argument if provided (requires explicit value)
         Boolean showPlayer = null;
         if (context.provided(showPlayerArg)) {
             showPlayer = context.get(showPlayerArg);
+        } else {
+            String input = context.getInputString();
+            if (input != null && input.toLowerCase().contains("--show-player")) {
+                context.sendMessage(Message.raw("Please provide a value for --show-player (true/false).").color("red"));
+                return;
+            }
         }
 
         boolean wasEnabled = state.isFreecamEnabled(playerId);
-        
-        // If show-player provided with no value, toggle it
-        boolean showPlayerToggle = false;
-        if (context.provided(showPlayerArg) && showPlayer == null) {
-            showPlayer = !state.getShowPlayer(playerId); // Toggle
-            showPlayerToggle = true;
-        }
-
         // Update speed if provided
         if (speed != null) {
             state.setSpeed(playerId, speed);
@@ -82,8 +80,7 @@ public class FreecamCommand extends AbstractPlayerCommand {
         // Update show-player preference if provided
         if (showPlayer != null) {
             state.setShowPlayer(playerId, showPlayer);
-            String toggleWord = showPlayerToggle ? "toggled" : "set";
-            context.sendMessage(Message.raw("Show player: " + toggleWord + " to " + (showPlayer ? "enabled" : "disabled") + ". Will apply on next toggle.").color("gray"));
+            context.sendMessage(Message.raw("Show player set to " + (showPlayer ? "enabled" : "disabled") + ". Will apply on next toggle.").color("gray"));
         }
 
         if (wasEnabled && speed == null && showPlayer == null) {

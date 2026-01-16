@@ -7,7 +7,7 @@ A server-side camera mod for Hytale that allows players to fly around freely, in
 - **Toggle freecam mode** with `/freecam` or `/fc` commands
 - **Free-flying camera** that detaches from your player and starts 2.5 blocks above for clear visibility
 - **Adjustable speed control** (1-10 range) with `--speed` parameter (default: 5)
-- **Third-person view** by default - see your player model while flying (toggle with `--show-player`)
+- **Third-person view** by default - see your player model while flying (set with `--show-player true/false`)
 - **Prevents block interaction** while in freecam mode
 - **Position restoration** when disabling freecam
 - **Lightweight server-side implementation**
@@ -18,8 +18,8 @@ A server-side camera mod for Hytale that allows players to fly around freely, in
 |---------|-------------|
 | `/freecam` | Toggle freecam mode on/off |
 | `/freecam --speed 7` | Set speed to 7 (applies on next toggle) |
+| `/freecam --show-player true` | Enable player visibility (third-person view) |
 | `/freecam --show-player false` | Disable player visibility (first-person view) |
-| `/freecam --show-player` | Toggle player visibility on/off |
 | `/fc` | Short alias for `/freecam` |
 | `/fc --speed 3 --show-player true` | Combine multiple settings |
 
