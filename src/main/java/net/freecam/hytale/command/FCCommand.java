@@ -13,8 +13,8 @@ import javax.annotation.Nonnull;
 import java.util.UUID;
 
 /**
- * Short alias for the freecam command.
- * Usage: /fc
+ * Short alias for the freecam command with speed support.
+ * Usage: /fc or /fc <speed (1-10)>
  * 
  * This is a convenience command that does exactly the same as /freecam
  * but is faster to type.
@@ -26,7 +26,7 @@ public class FCCommand extends CommandBase {
     private static final Message MSG_PLAYER_ONLY = Message.raw("This command can only be used by players.").color("red");
 
     public FCCommand() {
-        super("fc", "Toggle freecam mode (short alias)");
+        super("fc", "Toggle freecam mode (short alias). Usage: /fc [speed 1-10]");
         this.setPermissionGroup(GameMode.Adventure);
     }
 
@@ -43,15 +43,48 @@ public class FCCommand extends CommandBase {
         FreecamState state = FreecamState.getInstance();
         FreecamData data = state.getData(playerId);
 
+        // Try to parse speed from arguments
+        Integer speed = parseSpeed(ctx);
+
         if (state.isFreecamEnabled(playerId)) {
-            // Disable freecam
-            disableFreecam(player, data);
-            ctx.sendMessage(MSG_DISABLED);
+            // If speed argument provided and freecam is active, update speed
+            if (speed != null) {
+                state.setSpeed(playerId, speed);
+                ctx.sendMessage(Message.raw("Freecam speed set to " + speed + ".").color("green"));
+            } else {
+                // Otherwise, disable freecam
+                disableFreecam(player, data);
+                ctx.sendMessage(MSG_DISABLED);
+            }
         } else {
             // Enable freecam
+            if (speed != null) {
+                state.setSpeed(playerId, speed);
+            }
             enableFreecam(player, data);
             ctx.sendMessage(MSG_ENABLED);
         }
+    }
+
+    /**
+     * Try to parse speed from command arguments.
+     */
+    private Integer parseSpeed(@Nonnull CommandContext ctx) {
+        String input = ctx.getInputString().trim();
+        String[] parts = input.split("\\s+");
+
+        // Check for /fc <number>
+        if (parts.length > 1) {
+            try {
+                int speed = Integer.parseInt(parts[1]);
+                if (speed >= 1 && speed <= 10) {
+                    return speed;
+                }
+            } catch (NumberFormatException e) {
+                // Not a number, ignore
+            }
+        }
+        return null;
     }
 
     private void enableFreecam(Player player, FreecamData data) {

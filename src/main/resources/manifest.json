@@ -1,8 +1,8 @@
 {
     "Group": "Freecam",
     "Name": "Freecam",
-    "Version": "1.0.0",
-    "Description": "A freecam mod for Hytale - fly your camera freely through the world!",
+    "Version": "2.0.0",
+    "Description": "A freecam mod for Hytale with adjustable speed control and block interaction prevention",
     "Authors": [
         {
             "Name": "Freecam Team"

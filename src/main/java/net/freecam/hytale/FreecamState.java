@@ -11,9 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class FreecamState {
 
     private static final FreecamState INSTANCE = new FreecamState();
+    private static final int DEFAULT_SPEED = 5;
+    private static final int MIN_SPEED = 1;
+    private static final int MAX_SPEED = 10;
 
     // Player UUID -> FreecamData
     private final Map<UUID, FreecamData> playerStates = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> playerSpeeds = new ConcurrentHashMap<>();
 
     private FreecamState() {}
 
@@ -61,6 +65,31 @@ public class FreecamState {
      */
     public void removePlayer(UUID playerId) {
         playerStates.remove(playerId);
+        playerSpeeds.remove(playerId);
+    }
+
+    /**
+     * Get freecam speed for a player.
+     */
+    public int getSpeed(UUID playerId) {
+        return playerSpeeds.getOrDefault(playerId, DEFAULT_SPEED);
+    }
+
+    /**
+     * Set freecam speed for a player.
+     */
+    public void setSpeed(UUID playerId, int speed) {
+        int clamped = clampSpeed(speed);
+        playerSpeeds.put(playerId, clamped);
+    }
+
+    /**
+     * Clamp speed to valid range.
+     */
+    private int clampSpeed(int speed) {
+        if (speed < MIN_SPEED) return MIN_SPEED;
+        if (speed > MAX_SPEED) return MAX_SPEED;
+        return speed;
     }
 
     /**
