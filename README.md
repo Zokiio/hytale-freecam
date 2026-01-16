@@ -31,7 +31,7 @@ A server-side camera mod for Hytale that allows players to fly around freely, in
 
 1. Download the latest `Freecam-x.x.x.jar` from [Releases](https://github.com/Zokiio/hytale-freecam/releases)
 2. Copy it to your Hytale server's `mods/` folder
-3. Start the server with mods enabled: `java -jar HytaleServer.jar --allow-op --mods=./mods`
+3. Start the server (it auto-loads mods from `mods/`)
 4. Players can use `/freecam` or `/fc` to toggle freecam mode
 
 ### Building from Source
