@@ -6,9 +6,9 @@ A server-side camera mod for Hytale that allows players to fly around freely, in
 
 - **Toggle freecam mode** with `/freecam` or `/fc` commands
 - **Free-flying camera** that detaches from your player
-- **Adjustable speed** (1-10 range) for camera movement
-- **Block interaction prevention** while in freecam mode
-- **Per-player state management** with position restoration
+- **Adjustable speed control** (1-10 range) with `--speed` parameter
+- **Prevents block interaction** while in freecam mode
+- **Position restoration** when disabling freecam
 - **Lightweight server-side implementation**
 
 ## Commands
@@ -16,9 +16,9 @@ A server-side camera mod for Hytale that allows players to fly around freely, in
 | Command | Description |
 |---------|-------------|
 | `/freecam` | Toggle freecam mode on/off |
-| `/freecam <1-10>` | Enable freecam with specific speed (1=slow, 10=fast) |
+| `/freecam --speed 3` | Enable freecam with speed 3 (1=slow, 10=fast) |
 | `/fc` | Short alias for `/freecam` |
-| `/fc <1-10>` | Short alias with speed parameter |
+| `/fc --speed=5` | Short alias with speed parameter |
 
 ## Installation
 

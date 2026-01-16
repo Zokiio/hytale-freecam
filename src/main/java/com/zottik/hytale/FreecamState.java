@@ -1,4 +1,4 @@
-package net.freecam.hytale;
+package com.zottik.hytale;
 
 import java.util.Map;
 import java.util.UUID;
@@ -18,6 +18,7 @@ public class FreecamState {
     // Player UUID -> FreecamData
     private final Map<UUID, FreecamData> playerStates = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> playerSpeeds = new ConcurrentHashMap<>();
+    private final Map<UUID, Boolean> playerShowPlayer = new ConcurrentHashMap<>();
 
     private FreecamState() {}
 
@@ -66,6 +67,7 @@ public class FreecamState {
     public void removePlayer(UUID playerId) {
         playerStates.remove(playerId);
         playerSpeeds.remove(playerId);
+        playerShowPlayer.remove(playerId);
     }
 
     /**
@@ -81,6 +83,20 @@ public class FreecamState {
     public void setSpeed(UUID playerId, int speed) {
         int clamped = clampSpeed(speed);
         playerSpeeds.put(playerId, clamped);
+    }
+
+    /**
+     * Get show-player preference for a player.
+     */
+    public boolean getShowPlayer(UUID playerId) {
+        return playerShowPlayer.getOrDefault(playerId, true); // Default: show player (third-person)
+    }
+
+    /**
+     * Set show-player preference for a player.
+     */
+    public void setShowPlayer(UUID playerId, boolean showPlayer) {
+        playerShowPlayer.put(playerId, showPlayer);
     }
 
     /**
@@ -101,15 +117,6 @@ public class FreecamState {
         // Original position when freecam was enabled
         private double originalX, originalY, originalZ;
         private float originalYaw, originalPitch;
-        
-        // Settings
-        private float horizontalSpeed = 1.0f;
-        private float verticalSpeed = 1.0f;
-        private boolean showPlayer = true;
-        private boolean disableOnDamage = true;
-        private boolean freezePlayer = true;
-        private boolean ignoreCollision = true;
-        private InitialPerspective initialPerspective = InitialPerspective.FIRST_PERSON;
 
         public boolean isEnabled() {
             return enabled;
@@ -135,35 +142,5 @@ public class FreecamState {
         public double getOriginalZ() { return originalZ; }
         public float getOriginalYaw() { return originalYaw; }
         public float getOriginalPitch() { return originalPitch; }
-
-        public float getHorizontalSpeed() { return horizontalSpeed; }
-        public void setHorizontalSpeed(float speed) { this.horizontalSpeed = speed; }
-
-        public float getVerticalSpeed() { return verticalSpeed; }
-        public void setVerticalSpeed(float speed) { this.verticalSpeed = speed; }
-
-        public boolean isShowPlayer() { return showPlayer; }
-        public void setShowPlayer(boolean show) { this.showPlayer = show; }
-
-        public boolean isDisableOnDamage() { return disableOnDamage; }
-        public void setDisableOnDamage(boolean disable) { this.disableOnDamage = disable; }
-
-        public boolean isFreezePlayer() { return freezePlayer; }
-        public void setFreezePlayer(boolean freeze) { this.freezePlayer = freeze; }
-
-        public boolean isIgnoreCollision() { return ignoreCollision; }
-        public void setIgnoreCollision(boolean ignore) { this.ignoreCollision = ignore; }
-
-        public InitialPerspective getInitialPerspective() { return initialPerspective; }
-        public void setInitialPerspective(InitialPerspective perspective) { this.initialPerspective = perspective; }
-    }
-
-    /**
-     * Initial camera perspective options.
-     */
-    public enum InitialPerspective {
-        FIRST_PERSON,
-        THIRD_PERSON,
-        INSIDE
     }
 }

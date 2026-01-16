@@ -1,8 +1,8 @@
 {
     "Group": "Freecam",
     "Name": "Freecam",
-    "Version": "1.1.0",
-    "Description": "A freecam mod for Hytale with adjustable speed control",
+    "Version": "2.0.0",
+    "Description": "A freecam mod for Hytale with speed control, position restoration, and block interaction prevention",
     "Authors": [
         {
             "Name": "Freecam Team"
@@ -17,6 +17,6 @@
         
     },
     "DisabledByDefault": false,
-    "Main": "net.freecam.hytale.FreecamPlugin",
+    "Main": "com.zottik.hytale.FreecamPlugin",
     "IncludesAssetPack": true
 }

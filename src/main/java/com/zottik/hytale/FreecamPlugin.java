@@ -1,10 +1,12 @@
-package net.freecam.hytale;
+package com.zottik.hytale;
 
 import com.hypixel.hytale.logger.HytaleLogger;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
-import net.freecam.hytale.command.FCCommand;
-import net.freecam.hytale.command.FreecamCommand;
+import com.hypixel.hytale.server.core.universe.world.storage.EntityStore;
+import com.zottik.hytale.command.FreecamCommand;
+import com.zottik.hytale.event.FreecamBreakBlockEventSystem;
+import com.zottik.hytale.event.FreecamDamageBlockEventSystem;
 
 import javax.annotation.Nonnull;
 
@@ -13,9 +15,10 @@ import javax.annotation.Nonnull;
  * Inspired by the Minecraft Freecam mod.
  * 
  * Features:
- * - Toggle freecam mode with /freecam command
- * - Adjustable flight speed
- * - Configurable settings per player
+ * - Toggle freecam mode with /freecam or /fc command
+ * - Adjustable flight speed (1-10 range) with --speed parameter
+ * - Prevents block breaking while in freecam mode
+ * - Restores player position when disabling freecam
  */
 public class FreecamPlugin extends JavaPlugin {
 
@@ -32,14 +35,16 @@ public class FreecamPlugin extends JavaPlugin {
     protected void setup() {
         LOGGER.atInfo().log("Setting up Freecam plugin...");
         
-        // Register main freecam toggle command
+        // Register freecam command with /fc alias
         this.getCommandRegistry().registerCommand(new FreecamCommand());
         
-        // Register short alias
-        this.getCommandRegistry().registerCommand(new FCCommand());
+        // Register event systems to prevent block interactions during freecam
+        EntityStore.REGISTRY.registerSystem(new FreecamBreakBlockEventSystem());
+        EntityStore.REGISTRY.registerSystem(new FreecamDamageBlockEventSystem());
         
         LOGGER.atInfo().log("Freecam plugin setup complete!");
         LOGGER.atInfo().log("Use /freecam or /fc to toggle freecam mode.");
+        LOGGER.atInfo().log("Use /freecam --speed <1-10> to adjust camera speed.");
     }
 
     @Override
