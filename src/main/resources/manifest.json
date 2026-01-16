@@ -1,8 +1,8 @@
 {
     "Group": "Freecam",
     "Name": "Freecam",
-    "Version": "2.0.0",
-    "Description": "A freecam mod for Hytale with adjustable speed control and block interaction prevention",
+    "Version": "1.1.0",
+    "Description": "A freecam mod for Hytale with adjustable speed control",
     "Authors": [
         {
             "Name": "Freecam Team"
